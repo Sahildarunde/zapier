@@ -24,7 +24,6 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
     const body = req.body;
     const parsedData = types_1.SignupSchema.safeParse(body);
     if (!parsedData.success) {
-        console.log(parsedData.error);
         return res.status(411).json({
             message: "Incorrect inputs"
         });
