@@ -2,11 +2,10 @@ import { Router, Request, Response } from 'express';
 import { prismaClient } from '../db';
 import { SignupSchema, SigninSchema } from '../types';
 import { authMiddleware } from '../middleware';
-import jwt  from 'jsonwebtoken';
-import { ParseStatus, any, string } from 'zod';
+import jwt  from 'jsonwebtoken'
 import { JWT_PASSWORD } from '../config';
 
-const router = Router();
+const router = Router()
 
 
 
@@ -15,7 +14,6 @@ router.post("/signup", async (req, res): Promise<any>=> {
     const parsedData = SignupSchema.safeParse(body);
 
     if (!parsedData.success) {
-        console.log(parsedData.error);
         return res.status(411).json({
             message: "Incorrect inputs"
         })
