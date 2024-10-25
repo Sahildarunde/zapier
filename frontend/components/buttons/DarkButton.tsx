@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 
-export const DarkButton = ({ children, onClick, size = "small" }: {
+export const DarkButton = ({ children, onClick }: {
     children: ReactNode,
     onClick: () => void,
     size?: "big" | "small"

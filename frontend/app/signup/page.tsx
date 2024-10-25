@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "../config";
 
-export default function() {
+export default function Page() {
     const router = useRouter();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -44,7 +44,7 @@ export default function() {
 
                     <div className="pt-4">
                         <PrimaryButton onClick={async () => {
-                            const res = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
+                            await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
                                 username: email,
                                 password,
                                 name
