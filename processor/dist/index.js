@@ -8,42 +8,83 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
-const kafkajs_1 = require("kafkajs");
+const redis_1 = require("redis");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const TOPIC_NAME = "zap-events";
 const client = new client_1.PrismaClient();
-const kafka = new kafkajs_1.Kafka({
-    clientId: 'outbox-processor',
-    brokers: ['localhost:9092']
+const REDIS_HOST = process.env.REDIS_HOST;
+const redisClient = (0, redis_1.createClient)({
+    url: REDIS_HOST, // This should include the full connection string
 });
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const producer = kafka.producer();
-        yield producer.connect();
-        while (1) {
+        // Connect to Redis
+        yield redisClient.connect();
+        while (true) {
             const pendingRows = yield client.zapRunOutbox.findMany({
                 where: {},
-                take: 10
+                take: 10,
             });
             console.log(pendingRows);
-            producer.send({
-                topic: TOPIC_NAME,
-                messages: pendingRows.map(r => {
-                    return {
-                        value: JSON.stringify({ zapRunId: r.zapRunId, stage: 0 })
-                    };
-                })
-            });
-            yield client.zapRunOutbox.deleteMany({
-                where: {
-                    id: {
-                        in: pendingRows.map(x => x.id)
-                    }
-                }
-            });
+            if (pendingRows.length > 0) {
+                yield Promise.all(pendingRows.map(r => {
+                    const message = JSON.stringify({ zapRunId: r.zapRunId, stage: 0 });
+                    return redisClient.publish(TOPIC_NAME, message);
+                }));
+                yield client.zapRunOutbox.deleteMany({
+                    where: {
+                        id: {
+                            in: pendingRows.map(x => x.id),
+                        },
+                    },
+                });
+            }
             yield new Promise(r => setTimeout(r, 3000));
         }
     });
 }
-main();
+main().catch(err => {
+    console.error("Error:", err);
+});
+// import { PrismaClient } from "@prisma/client";
+// import {Kafka} from "kafkajs";
+// const TOPIC_NAME = "zap-events"
+// const client = new PrismaClient();
+// const kafka = new Kafka({
+//     clientId: 'outbox-processor',
+//     brokers: ['localhost:9092']
+// })
+// async function main() {
+//     const producer =  kafka.producer();
+//     await producer.connect();
+//     while(1) {
+//         const pendingRows = await client.zapRunOutbox.findMany({
+//             where :{},
+//             take: 10
+//         })
+//         console.log(pendingRows);
+//         producer.send({
+//             topic: TOPIC_NAME,
+//             messages: pendingRows.map(r => {
+//                 return {
+//                     value: JSON.stringify({ zapRunId: r.zapRunId, stage: 0 })
+//                 }
+//             })
+//         })  
+//         await client.zapRunOutbox.deleteMany({
+//             where: {
+//                 id: {
+//                     in: pendingRows.map(x => x.id)
+//                 }
+//             }
+//         })
+//         await new Promise(r => setTimeout(r, 3000));
+//     }
+// }
+// main();
