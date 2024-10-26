@@ -165,8 +165,6 @@ function Modal({ index, onSelect, availableItems }: { index: number, onSelect: (
                     }} />}
 
                     {step === 0 && <div>{availableItems.map(({id, name, image}) => {
-
-
                             return <div key={id} onClick={() => {
                                 if (isTrigger) {
                                     onSelect({
@@ -182,7 +180,8 @@ function Modal({ index, onSelect, availableItems }: { index: number, onSelect: (
                                     })
                                 }
                             }} className="flex border p-4 cursor-pointer hover:bg-slate-100">
-                                <Image src={image} width={30} className="rounded-full" alt={""} ></Image> <div className="flex flex-col justify-center"> {name} </div>
+                                <Image src={image} width={30} height={30} className="rounded-full" alt={""} ></Image> 
+                                <div className="flex flex-col justify-center"> {name} </div>
                             </div>
                         })}</div>}                    
                 </div>
