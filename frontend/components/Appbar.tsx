@@ -25,7 +25,7 @@ const Appbar = () => {
         <div className="flex border-b justify-between p-4">
             <div
                 onClick={() => {
-                    router.push("/dashboard");
+                    {isLoggedIn ? router.push("/dashboard") : router.push('/')}
                 }}
                 className="flex flex-col justify-center text-2xl font-extrabold"
             >
