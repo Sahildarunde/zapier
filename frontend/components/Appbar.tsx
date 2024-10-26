@@ -8,34 +8,32 @@ const Appbar = () => {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
-   
     useEffect(() => {
         const token = localStorage.getItem("token"); 
         setIsLoggedIn(!!token); 
     }, []);
 
     const handleLogout = () => {
-        
         localStorage.removeItem("token"); 
         setIsLoggedIn(false); 
         router.push("/");
     };
 
     return (
-        <div className="flex border-b justify-between p-4">
-            <div
+        <div className="flex flex-col md:flex-row justify-between p-4 border-b">
+            <div 
                 onClick={() => {
-                    if(isLoggedIn){
-                        router.push("/dashboard")
-                    }else {
-                        router.push("/")
+                    if (isLoggedIn) {
+                        router.push("/dashboard");
+                    } else {
+                        router.push("/");
                     }
                 }}
-                className="flex flex-col justify-center text-2xl font-extrabold"
+                className="flex flex-col justify-center text-2xl font-extrabold cursor-pointer"
             >
                 zapier
             </div>
-            <div className="flex">
+            <div className="flex flex-col md:flex-row mt-4 md:mt-0">
                 <div className="pr-4">
                     <LinkButton onClick={() => {}}>Contact Sales</LinkButton>
                 </div>
@@ -64,21 +62,6 @@ const Appbar = () => {
 };
 
 export default Appbar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
