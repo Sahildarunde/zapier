@@ -18,7 +18,7 @@ const Appbar = () => {
         
         localStorage.removeItem("token"); 
         setIsLoggedIn(false); 
-        router.push("/login");
+        router.push("/");
     };
 
     return (
