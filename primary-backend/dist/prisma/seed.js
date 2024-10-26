@@ -22,7 +22,7 @@ function main() {
         });
         yield prismaClient.availableAction.create({
             data: {
-                id: "sol",
+                id: "send-sol",
                 name: "Send Solana",
                 image: "https://pbs.twimg.com/profile_images/1472933274209107976/6u-LQfjG_400x400.jpg"
             }
