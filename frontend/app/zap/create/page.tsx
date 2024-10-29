@@ -82,14 +82,21 @@ export default function Page() {
         </div>
         <div className="w-full min-h-screen bg-slate-200 flex flex-col justify-center">
             <div className="flex justify-center w-full">
-                <ZapCell onClick={() => {
-                    setSelectedModalIndex(1);
-                }} name={selectedTrigger?.name ? selectedTrigger.name : "Trigger"} index={1} />
+                <ZapCell 
+                    onClick={() => { setSelectedModalIndex(1) }} 
+                    name={selectedTrigger?.name ? selectedTrigger.name : "Trigger"} 
+                    index={1} />
             </div>
+            
             <div className="w-full pt-2 pb-2">
-                {selectedActions.map((action, index) => <div key={index} className="pt-2 flex justify-center"> <ZapCell onClick={() => {
-                    setSelectedModalIndex(action.index);
-                }} name={action.availableActionName ? action.availableActionName : "Action"} index={action.index} /> </div>)}
+                {selectedActions.map((action, index) => 
+                    <div key={index} className="pt-2 flex justify-center"> 
+                        <ZapCell 
+                            onClick={() => { setSelectedModalIndex(action.index) }} 
+                            name={action.availableActionName ? action.availableActionName : "Action"} 
+                            index={action.index} /> 
+                    </div>
+                )}
             </div>
             <div className="flex justify-center">
                 <div>

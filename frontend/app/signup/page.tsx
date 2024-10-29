@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "../config";
 import Loader from "@/components/Loader";
-import { ToastContainer, toast } from 'react-toastify';
+import { Id, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
@@ -18,20 +18,34 @@ export default function Page() {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
+
+    let toastId: Id;
+    let timeoutId: ReturnType<typeof setTimeout>
+
     const handler = async () => {
         setIsLoading(true);
 
         try {
-            await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
+            const signupPromise = axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
                 username: email,
                 password,
                 name,
             });
-            toast.success("Signup successful! Redirecting to login...", );
+            timeoutId = setTimeout(() => {
+                toastId = toast.loading("Server is hosted on free render instance so, it'll take some time to spin up!!");
+            }, 500)
+
+            await signupPromise;
+
+            clearTimeout(timeoutId);
+            toast.update(toastId, { render: "Signup successful!", type: "success", isLoading: false });
             
+            setTimeout(() => toast.dismiss(toastId), 1000)
             setTimeout(() => {router.push("/login");}, 300)
         } catch (error) {
-            toast.error("Incorrect credientials");
+            toast.update(toastId, { render: "Incorrect credentials!", type: "error", isLoading: false });
+            clearTimeout(timeoutId);
+            setTimeout(() => toast.dismiss(toastId), 1000)
             console.log(error);
         }finally{
             setIsLoading(false)

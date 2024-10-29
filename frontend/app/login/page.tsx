@@ -8,7 +8,7 @@ import { useState } from "react";
 import { BACKEND_URL } from "../config";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
-import { ToastContainer, toast } from 'react-toastify';
+import { Id, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -18,19 +18,42 @@ export default function Page() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
+    let toastId: Id;
+    let timeoutId: ReturnType<typeof setTimeout>
+
     const handleLogin = async () => {
         setLoading(true); 
+        let timeoutActive = true
         try {
-            const res = await axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
+            const signinPromise = axios.post(`${BACKEND_URL}/api/v1/user/signin`, {
                 username: email,
                 password,
             });
-            localStorage.setItem("token", res.data.token);
-            toast.success(" logging In...", );
 
+            timeoutId = setTimeout(() => {
+                if(timeoutActive){
+                    toastId = toast.loading("Server is hosted on free render instance so, it'll take some time to spin up!!", );
+                }
+            }, 500);
+
+            const res = await signinPromise;
+
+            timeoutActive = false
+            clearTimeout(timeoutId);
+            toast.update(toastId, { render: "Login successful!", type: "success", isLoading: false });
+            
+
+
+            localStorage.setItem("token", res.data.token);
+
+            setTimeout(() => toast.dismiss(toastId), 1000)
             setTimeout(() => {router.push("/dashboard");}, 300)
+            
         } catch (e) {
-            toast.error("Incorrect credientials");
+            timeoutActive= false
+            toast.update(toastId, { render: "Incorrect credentials!", type: "error", isLoading: false });
+            clearTimeout(timeoutId);
+            setTimeout(() => toast.dismiss(toastId), 1000)
             console.log(e);
         } finally {
             setLoading(false); 
@@ -40,7 +63,7 @@ export default function Page() {
     return (
         <div>
             <Appbar />
-            <ToastContainer position="top-center" autoClose={3000} /> 
+            <ToastContainer position="top-center" closeButton autoClose={3000} /> 
             <div className="flex justify-center">
                 <div className="flex flex-col md:flex-row pt-8 max-w-4xl w-full"> {/* Use flex-col for smaller screens */}
                     <div className="flex-1 pt-20 px-4">
