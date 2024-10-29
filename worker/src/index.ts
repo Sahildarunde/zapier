@@ -9,6 +9,15 @@ import http from 'http';
 
 const PORT = process.env.PORT || 4000;
 
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Worker is running');
+});
+
+server.listen(PORT, () => {
+    console.log(`HTTP server running on port ${PORT}`);
+});
+
 const prismaClient = new PrismaClient();
 const TOPIC_NAME = "zap-events";
 
@@ -16,8 +25,8 @@ const TOPIC_NAME = "zap-events";
 const redisSubscriber = createClient({
   url: process.env.REDIS_HOST,
   socket: {
-    connectTimeout: 0,
-    reconnectStrategy: (retries) => Math.min(retries * 50, 5000),
+    connectTimeout: 5000,
+    reconnectStrategy: (retries) => Math.min(retries * 100, 5000),
   },
 });
 redisSubscriber.on("error", (err) => console.error("Redis Subscriber Error:", err));
@@ -33,9 +42,10 @@ redisPublisher.on("error", (err) => console.error("Redis Publisher Error:", err)
 
 async function main() {
   try {
-    // Connect Redis clients
+    console.log("Connecting to Redis...");
     await redisSubscriber.connect();
     await redisPublisher.connect();
+    console.log("Redis clients connected successfully.");
 
     // Subscribe to messages
     await redisSubscriber.subscribe(TOPIC_NAME, async (message: string) => {
@@ -99,15 +109,7 @@ async function main() {
 }
 
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Worker is running');
-});
 
-// Start HTTP server
-server.listen(PORT, () => {
-console.log(`HTTP server running on port ${PORT}`);
-});
 
 main().catch((err) => console.error("Error in execution:", err));
 
