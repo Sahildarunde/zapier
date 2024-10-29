@@ -56,6 +56,9 @@ main().catch(err => {
 
 const server = http.createServer((req, res) => {
     if (req.method === 'GET' && req.url === '/') {
+        main().catch(err => {
+            console.error("Error:", err);
+        });
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ status: 'healthy' }));
     } else {
