@@ -29,8 +29,9 @@ export default function Page() {
             toast.success(" logging In...", );
 
             setTimeout(() => {router.push("/dashboard");}, 300)
-        } catch (error) {
+        } catch (e) {
             toast.error("Incorrect credientials");
+            console.log(e);
         } finally {
             setLoading(false); 
         }

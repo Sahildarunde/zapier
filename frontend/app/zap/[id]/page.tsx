@@ -1,5 +1,5 @@
 "use client"
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Appbar from '@/components/Appbar';
 import { BACKEND_URL } from '../../config';
@@ -46,8 +46,18 @@ const Page = () => {
 
 export default Page;
 
+interface ZapData {
+  zap: {
+    id: string;
+    
+  };
+}
 
-function ZapDisplay({data}: {data:any}){
+function ZapDisplay({data}: {data?:ZapData | null}){
+  if (!data || !data.zap) {
+    return <div>Data not available</div>;
+  }
+
   return (
     <div>
       {data.zap.id}

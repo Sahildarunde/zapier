@@ -22,7 +22,7 @@ export default function Page() {
         setIsLoading(true);
 
         try {
-            const res = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
+            await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
                 username: email,
                 password,
                 name,
@@ -32,6 +32,7 @@ export default function Page() {
             setTimeout(() => {router.push("/login");}, 300)
         } catch (error) {
             toast.error("Incorrect credientials");
+            console.log(error);
         }finally{
             setIsLoading(false)
         }
