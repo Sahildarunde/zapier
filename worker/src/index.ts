@@ -7,7 +7,7 @@ import { sendEmail } from "./email";
 import { sendSol } from "./solana";
 import express from "express";
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 3001;
 
 
 const app = express();
@@ -115,7 +115,9 @@ async function main() {
 main().catch((err) => console.error("Error in execution:", err));
 
 
-app.listen(PORT);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server listening to port ${PORT}`);
+});
 
 
 
