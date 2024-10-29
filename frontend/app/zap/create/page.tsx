@@ -4,6 +4,7 @@
 import { BACKEND_URL } from "@/app/config";
 import Appbar  from "@/components/Appbar";
 import { Input } from "@/components/Input";
+import Loader from "@/components/Loader";
 import { ZapCell } from "@/components/ZapCell";
 import { PrimaryButton } from "@/components/buttons/PrimaryButton";
 import axios from "axios";
@@ -47,31 +48,37 @@ export default function Page() {
         metadata: Metadata;
     }[]>([]);
     const [selectedModalIndex, setSelectedModalIndex] = useState<null | number>(null);
+    const [publishLoading, setPublishLoading] = useState(false);
+
+    const handler = async () => {
+
+        setPublishLoading(true);
+
+        if (!selectedTrigger?.id) {
+            return;
+        }
+
+        await axios.post(`${BACKEND_URL}/api/v1/zap`, {
+            "availableTriggerId": selectedTrigger.id,
+            "triggerMetadata": {},
+            "actions": selectedActions.map(a => ({
+                availableActionId: a.availableActionId,
+                actionMetadata: a.metadata
+            }))
+        }, {
+            headers: {
+                Authorization: localStorage.getItem("token")
+            }
+        })
+        
+        router.push("/dashboard");
+
+    }
 
     return <div>
         <Appbar />
         <div className="flex justify-end bg-slate-200 p-4">
-            <PrimaryButton onClick={async () => {
-                if (!selectedTrigger?.id) {
-                    return;
-                }
-
-                await axios.post(`${BACKEND_URL}/api/v1/zap`, {
-                    "availableTriggerId": selectedTrigger.id,
-                    "triggerMetadata": {},
-                    "actions": selectedActions.map(a => ({
-                        availableActionId: a.availableActionId,
-                        actionMetadata: a.metadata
-                    }))
-                }, {
-                    headers: {
-                        Authorization: localStorage.getItem("token")
-                    }
-                })
-                
-                router.push("/dashboard");
-
-            }}>Publish</PrimaryButton>
+            {publishLoading ? <Loader /> : <PrimaryButton onClick={handler}>Publish</PrimaryButton>}
         </div>
         <div className="w-full min-h-screen bg-slate-200 flex flex-col justify-center">
             <div className="flex justify-center w-full">

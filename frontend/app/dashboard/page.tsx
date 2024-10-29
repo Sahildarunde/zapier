@@ -7,6 +7,7 @@ import { BACKEND_URL, HOOKS_URL } from "../config";
 import { LinkButton } from "@/components/buttons/LinkButton";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Loader from "@/components/Loader";
 
 interface Zap {
     id: string;
@@ -57,6 +58,13 @@ function useZaps() {
 export default function Page() {
     const { loading, zaps } = useZaps();
     const router = useRouter();
+    const [createLoading, setCreateLoading] = useState(false);
+
+    function handler(){
+        setCreateLoading(true);
+
+        setTimeout(() => router.push("/zap/create"), 300);
+    }
 
     return (
         <div>
@@ -65,12 +73,14 @@ export default function Page() {
                 <div className="max-w-screen-lg w-full">
                     <div className="flex justify-between pr-8">
                         <div className="text-2xl font-bold">My Zaps</div>
-                        <DarkButton onClick={() => router.push("/zap/create")}>Create</DarkButton>
+                        {createLoading ? <Loader /> : <DarkButton onClick={handler}>Create</DarkButton>}
                     </div>
                 </div>
             </div>
             {loading ? (
-                <div className="flex justify-center pt-8">Loading...</div>
+              <div className="mt-[50px]">
+                 <Loader />
+              </div>
             ) : (
                 <div className="flex justify-center pt-4">
                     <ZapTable zaps={zaps} />

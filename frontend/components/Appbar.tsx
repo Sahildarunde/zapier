@@ -3,10 +3,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"; 
 import { LinkButton } from "./buttons/LinkButton";
 import { PrimaryButton } from "./buttons/PrimaryButton";
+import Loader from "./Loader";
 
 const Appbar = () => {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState(false); 
+    const [isLoggedOut, setIsLoggedOut] = useState(false); 
 
     useEffect(() => {
         const token = localStorage.getItem("token"); 
@@ -14,9 +16,10 @@ const Appbar = () => {
     }, []);
 
     const handleLogout = () => {
+        setIsLoggedOut(true);
         localStorage.removeItem("token"); 
         setIsLoggedIn(false); 
-        router.push("/");
+        setTimeout(() => router.push("/"), 300);
     };
 
     return (
@@ -39,9 +42,11 @@ const Appbar = () => {
                 </div>
                 
                 {isLoggedIn ? (
-                    <PrimaryButton onClick={handleLogout}>
-                        Logout
-                    </PrimaryButton>
+                    isLoggedOut ? (
+                        <Loader />
+                    ) : (
+                        <PrimaryButton onClick={handleLogout}>Logout</PrimaryButton>
+                    )
                 ) : (
                     <>
                         <div className="pr-4">

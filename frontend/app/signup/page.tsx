@@ -7,16 +7,43 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BACKEND_URL } from "../config";
+import Loader from "@/components/Loader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
     const router = useRouter();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handler = async () => {
+        setIsLoading(true);
+
+        try {
+            const res = await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
+                username: email,
+                password,
+                name,
+            });
+            toast.success("Signup successful! Redirecting to login...", );
+            
+            setTimeout(() => {router.push("/login");}, 300)
+        } catch (error) {
+            toast.error("Incorrect credientials");
+        }finally{
+            setIsLoading(false)
+        }
+        
+    }
+
+
 
     return (
         <div>
             <Appbar />
+            <ToastContainer position="top-center" autoClose={3000} /> 
             <div className="flex justify-center">
                 <div className="flex flex-col md:flex-row pt-8 max-w-4xl w-full"> {/* Use flex-col for small screens */}
                     <div className="flex-1 pt-20 px-4">
@@ -51,19 +78,17 @@ export default function Page() {
                             placeholder="Password"
                         />
                         <div className="pt-4">
-                            <PrimaryButton
-                                onClick={async () => {
-                                    await axios.post(`${BACKEND_URL}/api/v1/user/signup`, {
-                                        username: email,
-                                        password,
-                                        name,
-                                    });
-                                    router.push("/login");
-                                }}
+                            {isLoading ? (
+                                <Loader />
+                               
+                            ) : (
+                                <PrimaryButton
+                                onClick={handler}
                                 size="big"
                             >
                                 Signup
                             </PrimaryButton>
+                            )}
                         </div>
                     </div>
                 </div>

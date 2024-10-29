@@ -4,6 +4,7 @@ import { SignupSchema, SigninSchema } from '../types';
 import { authMiddleware } from '../middleware';
 import jwt  from 'jsonwebtoken'
 import { JWT_PASSWORD } from '../config';
+import bcrypt from 'bcrypt';
 
 const router = Router()
 
@@ -30,17 +31,20 @@ router.post("/signup", async (req, res): Promise<any>=> {
             message: "User already exists"
         })
     }
+    const hasdhedPassword = await bcrypt.hash(parsedData.data.password, 10);
+    console.log(hasdhedPassword);
 
     await prismaClient.user.create({
         data: {
             email: parsedData.data.username,
-            password: parsedData.data.password,
+            password: hasdhedPassword,
             name: parsedData.data.name
         }
     })
 
     return res.status(201).json({
-        message: "Please verify your account by checking your email"
+        message: "Please verify your account by checking your email",
+        
     });
 
 })
@@ -57,18 +61,29 @@ router.post("/signin", async (req, res): Promise<any> => {
         })
     }
 
+    
+
     const user = await prismaClient.user.findFirst({
         where: {
-            email: parsedData.data.username,
-            password: parsedData.data.password
+            email: parsedData.data.username
         }
     })
 
     if(!user){
         return res.status(403).json({
-            message: "Incorrect credentials"
+            message: "Incorrect credentials",
         })
     }
+
+    const hasdhedPassword = await bcrypt.compare(parsedData.data.password, user.password)
+
+    if (!hasdhedPassword) {
+        return res.status(403).json({
+            message: "Incorrect credentials",
+            hasdhedPassword
+        });
+    }
+
 
     const token = jwt.sign({
         id: user.id

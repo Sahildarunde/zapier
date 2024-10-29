@@ -19,6 +19,7 @@ const types_1 = require("../types");
 const middleware_1 = require("../middleware");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = require("../config");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = (0, express_1.Router)();
 router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const body = req.body;
@@ -38,15 +39,17 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
             message: "User already exists"
         });
     }
+    const hasdhedPassword = yield bcrypt_1.default.hash(parsedData.data.password, 10);
+    console.log(hasdhedPassword);
     yield db_1.prismaClient.user.create({
         data: {
             email: parsedData.data.username,
-            password: parsedData.data.password,
+            password: hasdhedPassword,
             name: parsedData.data.name
         }
     });
     return res.status(201).json({
-        message: "Please verify your account by checking your email"
+        message: "Please verify your account by checking your email",
     });
 }));
 router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,13 +63,19 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     const user = yield db_1.prismaClient.user.findFirst({
         where: {
-            email: parsedData.data.username,
-            password: parsedData.data.password
+            email: parsedData.data.username
         }
     });
     if (!user) {
         return res.status(403).json({
-            message: "Incorrect credentials"
+            message: "Incorrect credentials",
+        });
+    }
+    const hasdhedPassword = yield bcrypt_1.default.compare(parsedData.data.password, user.password);
+    if (!hasdhedPassword) {
+        return res.status(403).json({
+            message: "Incorrect credentials",
+            hasdhedPassword
         });
     }
     const token = jsonwebtoken_1.default.sign({

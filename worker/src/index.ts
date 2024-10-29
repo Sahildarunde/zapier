@@ -18,6 +18,7 @@ const redisSubscriber = createClient({
           return Math.min(retries * 50, 5000); 
       },
   },
+  
 });
 
 const redisPublisher = createClient({
