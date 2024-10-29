@@ -15,10 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const redis_1 = require("redis");
 const dotenv_1 = __importDefault(require("dotenv"));
+const http_1 = __importDefault(require("http"));
 dotenv_1.default.config();
 const TOPIC_NAME = "zap-events";
 const client = new client_1.PrismaClient();
 const REDIS_HOST = process.env.REDIS_HOST;
+const PORT = process.env.PORT || 4000;
 const redisClient = (0, redis_1.createClient)({
     url: REDIS_HOST, // This should include the full connection string
 });
@@ -51,6 +53,13 @@ function main() {
 }
 main().catch(err => {
     console.error("Error:", err);
+});
+const server = http_1.default.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Worker is running');
+});
+server.listen(PORT, () => {
+    console.log(`HTTP server running on port ${PORT}`);
 });
 // import { PrismaClient } from "@prisma/client";
 // import {Kafka} from "kafkajs";

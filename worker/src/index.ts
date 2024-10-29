@@ -1,130 +1,116 @@
-require('dotenv').config();
-
+require("dotenv").config();
 import { PrismaClient } from "@prisma/client";
 import { JsonObject } from "@prisma/client/runtime/library";
-import { createClient } from 'redis';
+import { createClient } from "redis";
 import { parse } from "./parser";
 import { sendEmail } from "./email";
 import { sendSol } from "./solana";
+import http from 'http';
+
+const PORT = process.env.PORT || 4000;
 
 const prismaClient = new PrismaClient();
 const TOPIC_NAME = "zap-events";
 
+// Redis clients with error handlers
 const redisSubscriber = createClient({
   url: process.env.REDIS_HOST,
   socket: {
-      connectTimeout: 0,
-      reconnectStrategy: (retries) => {
-          return Math.min(retries * 50, 5000); 
-      },
+    connectTimeout: 0,
+    reconnectStrategy: (retries) => Math.min(retries * 50, 5000),
   },
-  
 });
+redisSubscriber.on("error", (err) => console.error("Redis Subscriber Error:", err));
 
 const redisPublisher = createClient({
   url: process.env.REDIS_HOST,
   socket: {
-      connectTimeout: 0,
-      reconnectStrategy: (retries) => {
-          return Math.min(retries * 50, 5000); 
-      },
+    connectTimeout: 0,
+    reconnectStrategy: (retries) => Math.min(retries * 50, 5000),
   },
 });
-
+redisPublisher.on("error", (err) => console.error("Redis Publisher Error:", err));
 
 async function main() {
-    try {
-        await redisSubscriber.connect();
-        await redisPublisher.connect();
+  try {
+    // Connect Redis clients
+    await redisSubscriber.connect();
+    await redisPublisher.connect();
 
-        await redisSubscriber.subscribe(TOPIC_NAME, async (message: string) => {
-            console.log("Received message:", message);
+    // Subscribe to messages
+    await redisSubscriber.subscribe(TOPIC_NAME, async (message: string) => {
+      console.log("Received message:", message);
 
-            if (!message) {
-                return;
-            }
+      if (!message) {
+        console.error("Received empty message");
+        return;
+      }
 
-            const parsedValue = JSON.parse(message);
-            const zapRunId = parsedValue.zapRunId;
-            const stage = parsedValue.stage;
+      const parsedValue = JSON.parse(message);
+      const zapRunId = parsedValue.zapRunId;
+      const stage = parsedValue.stage;
 
-            const zapRunDetails = await prismaClient.zapRun.findFirst({
-                where: {
-                    id: zapRunId,
-                },
-                include: {
-                    zap: {
-                        include: {
-                            actions: {
-                                include: {
-                                    type: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
+      const zapRunDetails = await prismaClient.zapRun.findFirst({
+        where: { id: zapRunId },
+        include: {
+          zap: {
+            include: { actions: { include: { type: true } } },
+          },
+        },
+      });
 
-            const currentAction = zapRunDetails?.zap.actions.find(x => x.sortingOrder === stage);
+      const currentAction = zapRunDetails?.zap.actions.find((x) => x.sortingOrder === stage);
+      if (!currentAction) {
+        console.error("Current action not found for stage:", stage);
+        return;
+      }
 
-            if (!currentAction) {
-                console.log("Current action not found?");
-                return;
-            }
+      const zapRunMetadata = zapRunDetails?.metadata;
 
-            const zapRunMetadata = zapRunDetails?.metadata;
+      try {
+        if (currentAction.type.id === "email") {
+          const body = parse((currentAction.metadata as JsonObject)?.body as string, zapRunMetadata);
+          const to = parse((currentAction.metadata as JsonObject)?.email as string, zapRunMetadata);
+          console.log(`Sending email to ${to} with body: ${body}`);
+          await sendEmail(to, body);
+        } else if (currentAction.type.id === "send-sol") {
+          const amount = parse((currentAction.metadata as JsonObject)?.amount as string, zapRunMetadata);
+          const address = parse((currentAction.metadata as JsonObject)?.address as string, zapRunMetadata);
+          console.log(`Sending SOL of ${amount} to address ${address}`);
+          await sendSol(address, amount);
+        }
 
-            // Handle email action
-            if (currentAction.type.id === "email") {
-                const body = parse((currentAction.metadata as JsonObject)?.body as string, zapRunMetadata);
-                const to = parse((currentAction.metadata as JsonObject)?.email as string, zapRunMetadata);
-                console.log(`Sending out email to ${to} body is ${body}`);
-                await sendEmail(to, body);
-            }
+        await new Promise((r) => setTimeout(r, 500));
 
-            // Handle send-sol action
-            if (currentAction.type.id === "send-sol") {
-                const amount = parse((currentAction.metadata as JsonObject)?.amount as string, zapRunMetadata);
-                const address = parse((currentAction.metadata as JsonObject)?.address as string, zapRunMetadata);
-                console.log(`Sending out SOL of ${amount} to address ${address}`);
+        const lastStage = (zapRunDetails?.zap.actions.length || 1) - 1;
+        if (lastStage !== stage) {
+          console.log("Pushing next stage to the queue");
+          await redisPublisher.publish(TOPIC_NAME, JSON.stringify({ stage: stage + 1, zapRunId }));
+        }
 
-                try {
-                    await sendSol(address, amount);
-                } catch (error) {
-                    console.error("Error sending SOL (mocked):");
-                    
-                }
-            }
-
-            
-            await new Promise(r => setTimeout(r, 500));
-
-            const lastStage = (zapRunDetails?.zap.actions?.length || 1) - 1; // 1
-            console.log(lastStage);
-            console.log(stage);
-            if (lastStage !== stage) {
-                console.log("pushing back to the queue");
-                try {
-                    await redisPublisher.publish(TOPIC_NAME, JSON.stringify({
-                        stage: stage + 1,
-                        zapRunId,
-                    }));
-                } catch (error) {
-                    console.error("Error publishing to Redis:", error);
-                   
-                }
-            }
-
-            console.log("processing done");
-        });
-    } catch (error) {
-        console.error("Error in main function:", error);
-    }
+        console.log("Processing done");
+      } catch (actionError) {
+        console.error("Error in processing action:", actionError);
+      }
+    });
+  } catch (error) {
+    console.error("Error in main function:", error);
+  }
 }
 
-main().catch(err => {
-    console.error("Error:", err);
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Worker is running');
 });
+
+// Start HTTP server
+server.listen(PORT, () => {
+console.log(`HTTP server running on port ${PORT}`);
+});
+
+main().catch((err) => console.error("Error in execution:", err));
+
 
 
 

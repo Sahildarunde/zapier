@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { createClient } from 'redis';
 import dotenv from 'dotenv';
+import http from 'http';
 
 dotenv.config();
 
@@ -10,8 +11,12 @@ const client = new PrismaClient();
 
 const REDIS_HOST = process.env.REDIS_HOST;
 
+const PORT = process.env.PORT || 4000;
+
+
 const redisClient = createClient({
     url: REDIS_HOST, // This should include the full connection string
+    
 });
 
 async function main() {
@@ -47,6 +52,17 @@ async function main() {
 main().catch(err => {
     console.error("Error:", err);
 });
+
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Worker is running');
+});
+
+server.listen(PORT, () => {
+    console.log(`HTTP server running on port ${PORT}`);
+});
+
 
 
 
