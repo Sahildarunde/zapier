@@ -5,18 +5,19 @@ import { createClient } from "redis";
 import { parse } from "./parser";
 import { sendEmail } from "./email";
 import { sendSol } from "./solana";
-import http from 'http';
+import express from "express";
 
 const PORT = process.env.PORT || 3001;
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Worker is running');
-});
 
-server.listen(PORT, () => {
-    console.log(`HTTP server running on port ${PORT}`);
-});
+const app = express();
+app.use(express.json())
+
+app.get("/", (req, res) => {
+    const data = req.body;
+    main().catch((err) => console.error("Error in execution:", err));
+    res.send({ message: "healthy", data })
+})
 
 const prismaClient = new PrismaClient();
 const TOPIC_NAME = "zap-events";
@@ -114,6 +115,7 @@ async function main() {
 main().catch((err) => console.error("Error in execution:", err));
 
 
+app.listen(PORT);
 
 
 
