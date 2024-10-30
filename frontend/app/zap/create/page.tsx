@@ -45,7 +45,7 @@ export default function Page() {
         index: number;
         availableActionId: string;
         availableActionName: string;
-        metadata: Metadata;cr
+        metadata: Metadata;
     }[]>([]);
     const [selectedModalIndex, setSelectedModalIndex] = useState<null | number>(null);
     const [publishLoading, setPublishLoading] = useState(false);
