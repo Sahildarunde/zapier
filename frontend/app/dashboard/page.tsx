@@ -71,8 +71,8 @@ export default function Page() {
             <Appbar />
             <div className="flex justify-center pt-8">
                 <div className="max-w-screen-lg w-full">
-                    <div className="flex justify-between pr-8">
-                        <div className="text-2xl font-bold">My Zaps</div>
+                    <div className="flex justify-between pr-8 pl-8">
+                        <div className="text-2xl font-bold ">My Zaps</div>
                         {createLoading ? <Loader /> : <DarkButton onClick={handler}>Create</DarkButton>}
                     </div>
                 </div>

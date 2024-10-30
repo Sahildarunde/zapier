@@ -13,7 +13,7 @@ const Hero = () => {
             </div>
         </div>
         <div className="flex justify-center pt-2">
-            <div className="text-xl font-bold font-normal text-center pt-8 max-w-2xl">
+            <div className="md:text-xl sm:text-lg font-bold font-normal text-center pt-8 max-w-2xl p-4">
                 AI gives you automation superpowers, and Zapier puts them to work. Pairing AI and Zapier helps you turn ideas into workflows and bots that work for you.
             </div>
         </div>
@@ -29,7 +29,7 @@ const Hero = () => {
             </div>
         </div>
 
-        <div className="flex justify-center pt-4">
+        <div className="flex flex-wrap gap-4 justify-center pt-4">
             <Feature title={"Free Forever"} subtitle={"for core features"} />
             <Feature title={"More apps"} subtitle={"than any other platforms"} />
             <Feature title={"Cutting Edge"} subtitle={"AI Features"} />

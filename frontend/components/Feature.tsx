@@ -4,10 +4,10 @@ export const Feature = ({title, subtitle}: {
     title: string,
     subtitle: string
 }) => {
-    return <div className="flex pl-8">
+    return <div className="flex md:pl-8 ">
         <Check />
-        <div className="flex flex-col justify-center pl-2">
-            <div className="flex">
+        <div className="flex flex-col  justify-center pl-2">
+            <div className="flex flex-wrap">
                 <div className="font-bold text-sm">
                     {title}
                 </div>

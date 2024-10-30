@@ -7,7 +7,7 @@ export default function Home() {
     <main className="pb-48">
         <Appbar />
         <Hero />
-        <div className="pt-8">
+        <div className="pt-8 p-4">
           <HeroVideo />
         </div>
     </main>
