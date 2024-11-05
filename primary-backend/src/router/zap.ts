@@ -8,8 +8,8 @@ const router = Router();
 router.get("/getZapRuns", async (req, res): Promise<any> => {
     console.log("Route accessed");
 
-    // Make sure zapId is correctly retrieved from query or body
-    const zapId = req.body.id;
+   
+    const zapId = req.query.zapId || req.body.id;
     console.log("zapId received:", zapId);
 
     if (!zapId) {

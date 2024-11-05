@@ -17,8 +17,7 @@ const db_1 = require("../db");
 const router = (0, express_1.Router)();
 router.get("/getZapRuns", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Route accessed");
-    // Make sure zapId is correctly retrieved from query or body
-    const zapId = req.body.id;
+    const zapId = req.query.zapId || req.body.id;
     console.log("zapId received:", zapId);
     if (!zapId) {
         return res.status(400).json({
