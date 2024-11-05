@@ -5,6 +5,40 @@ import { prismaClient } from "../db";
 
 const router = Router();
 
+router.get("/getZapRuns", async (req, res): Promise<any> => {
+    console.log("Route accessed");
+
+    // Make sure zapId is correctly retrieved from query or body
+    const zapId = req.body.id;
+    console.log("zapId received:", zapId);
+
+    if (!zapId) {
+        return res.status(400).json({
+            message: "zapId is required."
+        });
+    }
+
+    try {
+        const zapRuns = await prismaClient.zapRun.findMany({
+            where: {
+                zapId: zapId
+            }
+        });
+
+        console.log("zapRuns fetched:", zapRuns);
+
+        return res.status(200).json({
+            zapRuns
+        });
+    } catch (error) {
+        console.error("Error fetching zap runs:", error);
+        return res.status(500).json({
+            message: "Failed to retrieve zap runs."
+        });
+    }
+});
+
+
 router.post("/",authMiddleware,  async (req, res): Promise<any> => {
      // @ts-ignore
      const id: string = req.id;
@@ -56,7 +90,6 @@ router.post("/",authMiddleware,  async (req, res): Promise<any> => {
         zapId
     })
     
-
 })
 
 router.get("/", authMiddleware, async (req, res): Promise<any> => {
@@ -117,5 +150,7 @@ router.get("/:zapId", authMiddleware, async (req, res): Promise<any> => {
         zap
     })
 })
+
+
 
 export const zapRouter = router;

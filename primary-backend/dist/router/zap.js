@@ -15,6 +15,34 @@ const middleware_1 = require("../middleware");
 const types_1 = require("../types");
 const db_1 = require("../db");
 const router = (0, express_1.Router)();
+router.get("/getZapRuns", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("Route accessed");
+    // Make sure zapId is correctly retrieved from query or body
+    const zapId = req.body.id;
+    console.log("zapId received:", zapId);
+    if (!zapId) {
+        return res.status(400).json({
+            message: "zapId is required."
+        });
+    }
+    try {
+        const zapRuns = yield db_1.prismaClient.zapRun.findMany({
+            where: {
+                zapId: zapId
+            }
+        });
+        console.log("zapRuns fetched:", zapRuns);
+        return res.status(200).json({
+            zapRuns
+        });
+    }
+    catch (error) {
+        console.error("Error fetching zap runs:", error);
+        return res.status(500).json({
+            message: "Failed to retrieve zap runs."
+        });
+    }
+}));
 router.post("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore
     const id = req.id;
