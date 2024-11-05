@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors())
 
 const client = new PrismaClient();
 
@@ -33,4 +36,4 @@ app.post('/hooks/catch/:userId/:zapId', async (req, res) => {
     })
 })
 
-app.listen(3002);
+app.listen(3000);
