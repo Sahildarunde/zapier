@@ -5,19 +5,15 @@ import { createClient } from "redis";
 import { parse } from "./parser";
 import { sendEmail } from "./email";
 import { sendSol } from "./solana";
-import express from "express";
+import dotenv from 'dotenv';
+import http from 'http';
 
-const port = Number(process.env.PORT) || 3001;
+dotenv.config();
 
 
-const app = express();
-app.use(express.json())
+const port = process.env.PORT || 4000;
 
-app.get("/", (req, res) => {
-    const data = req.body;
-    main().catch((err) => console.error("Error in execution:", err));
-    res.send({ message: "healthy", data })
-})
+
 
 const prismaClient = new PrismaClient();
 const TOPIC_NAME = "zap-events";
@@ -115,8 +111,22 @@ async function main() {
 main().catch((err) => console.error("Error in execution:", err));
 
 
-app.listen(port, '0.0.0.0:3000', () => {
-    console.log(`Server listening to port ${port}`);
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET' && req.url === '/') {
+      main().catch(err => {
+          console.error("Error:", err);
+      });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'healthy' }));
+  } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not Found');
+  }
+});
+
+server.listen(port, () => {
+  console.log(`HTTP server running on port ${port}`);
 });
 
 
