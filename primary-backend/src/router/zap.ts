@@ -164,11 +164,15 @@ router.put("/:zapId", authMiddleware, async (req, res): Promise<any> => {
 
 router.post('/createEmptyZap', async (req, res): Promise<any> => {
     try {
-      const { userId, triggerId } = req.body; // `triggerId` is now optional
+      let { userId, triggerId } : { userId: number, triggerId: string}= req.body; // `triggerId` is now optional
   
       // Validate required fields
       if (!userId) {
         return res.status(400).json({ error: "userId is required" });
+      }
+
+      if(!triggerId){
+        triggerId = ""
       }
   
       // Create an empty Zap entry with only the userId (and triggerId if provided)
