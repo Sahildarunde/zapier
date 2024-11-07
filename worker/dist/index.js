@@ -23,7 +23,7 @@ dotenv_1.default.config();
 const PORT = process.env.PORT || 4000;
 const prismaClient = new client_1.PrismaClient();
 const TOPIC_NAME = "zap-events";
-// Redis clients with error handlers
+let isRedisConnected = false;
 const redisSubscriber = (0, redis_1.createClient)({
     url: process.env.REDIS_HOST,
     socket: {
@@ -40,13 +40,24 @@ const redisPublisher = (0, redis_1.createClient)({
     },
 });
 redisPublisher.on("error", (err) => console.error("Redis Publisher Error:", err));
+function connectRedis() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!isRedisConnected) {
+            yield redisSubscriber.connect();
+            yield redisPublisher.connect();
+            isRedisConnected = true;
+            console.log("Redis clients connected successfully.");
+        }
+        else {
+            console.log("Redis is already connected.");
+        }
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             console.log("Connecting to Redis...");
-            yield redisSubscriber.connect();
-            yield redisPublisher.connect();
-            console.log("Redis clients connected successfully.");
+            yield connectRedis();
             // Subscribe to messages
             yield redisSubscriber.subscribe(TOPIC_NAME, (message) => __awaiter(this, void 0, void 0, function* () {
                 var _a, _b, _c, _d;
