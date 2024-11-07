@@ -27,13 +27,13 @@ const transport = nodemailer_1.default.createTransport({
         pass: process.env.SMTP_PASSWORD,
     },
 });
-function sendEmail(to, body) {
+function sendEmail(to, body, subject, from) {
     return __awaiter(this, void 0, void 0, function* () {
         yield transport.sendMail({
-            from: "sahildarundedev@gmail.com",
-            sender: "sahildarundedev@gmail.com",
+            from: from,
+            sender: from,
             to,
-            subject: "Hello from Zapier",
+            subject: subject || '',
             text: body
         });
     });

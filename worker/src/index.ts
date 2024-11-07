@@ -85,9 +85,10 @@ async function main() {
         if (currentAction.type.id === "email") {
           const body = parse((currentAction.metadata as JsonObject)?.body as string, zapRunMetadata);
           const to = parse((currentAction.metadata as JsonObject)?.email as string, zapRunMetadata);
-          const subject = parse((currentAction.metadata as JsonObject)?.email as string, zapRunMetadata);
+          const subject = parse((currentAction.metadata as JsonObject)?.subject as string, zapRunMetadata);
+          const from = parse((currentAction.metadata as JsonObject)?.from as string, zapRunMetadata);
           console.log(`Sending email to ${to} with body: ${body}`);
-          await sendEmail(to, body);
+          await sendEmail(to, body, subject, from);
         } else if (currentAction.type.id === "send-sol") {
           const amount = parse((currentAction.metadata as JsonObject)?.amount as string, zapRunMetadata);
           const address = parse((currentAction.metadata as JsonObject)?.address as string, zapRunMetadata);

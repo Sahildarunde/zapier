@@ -60,7 +60,7 @@ function main() {
             yield connectRedis();
             // Subscribe to messages
             yield redisSubscriber.subscribe(TOPIC_NAME, (message) => __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c, _d;
+                var _a, _b, _c, _d, _e, _f;
                 console.log("Received message:", message);
                 if (!message) {
                     console.error("Received empty message");
@@ -87,12 +87,14 @@ function main() {
                     if (currentAction.type.id === "email") {
                         const body = (0, parser_1.parse)((_a = currentAction.metadata) === null || _a === void 0 ? void 0 : _a.body, zapRunMetadata);
                         const to = (0, parser_1.parse)((_b = currentAction.metadata) === null || _b === void 0 ? void 0 : _b.email, zapRunMetadata);
+                        const subject = (0, parser_1.parse)((_c = currentAction.metadata) === null || _c === void 0 ? void 0 : _c.subject, zapRunMetadata);
+                        const from = (0, parser_1.parse)((_d = currentAction.metadata) === null || _d === void 0 ? void 0 : _d.from, zapRunMetadata);
                         console.log(`Sending email to ${to} with body: ${body}`);
-                        yield (0, email_1.sendEmail)(to, body);
+                        yield (0, email_1.sendEmail)(to, body, subject, from);
                     }
                     else if (currentAction.type.id === "send-sol") {
-                        const amount = (0, parser_1.parse)((_c = currentAction.metadata) === null || _c === void 0 ? void 0 : _c.amount, zapRunMetadata);
-                        const address = (0, parser_1.parse)((_d = currentAction.metadata) === null || _d === void 0 ? void 0 : _d.address, zapRunMetadata);
+                        const amount = (0, parser_1.parse)((_e = currentAction.metadata) === null || _e === void 0 ? void 0 : _e.amount, zapRunMetadata);
+                        const address = (0, parser_1.parse)((_f = currentAction.metadata) === null || _f === void 0 ? void 0 : _f.address, zapRunMetadata);
                         console.log(`Sending SOL of ${amount} to address ${address}`);
                         yield (0, solana_1.sendSol)(address, amount);
                     }

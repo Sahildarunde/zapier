@@ -14,10 +14,10 @@ const transport = nodemailer.createTransport({
     },
   });
 
-export async function sendEmail(to: string, body: string, subject: string) {
+export async function sendEmail(to: string, body: string, subject: string, from: string) {
     await transport.sendMail({
-        from: "sahildarundedev@gmail.com",
-        sender: "sahildarundedev@gmail.com",
+        from: from,
+        sender: from,
         to,
         subject: subject || '',
         text: body
