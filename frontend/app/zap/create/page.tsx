@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BACKEND_URL } from "@/app/config";

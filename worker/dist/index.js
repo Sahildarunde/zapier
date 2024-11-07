@@ -86,7 +86,7 @@ function main() {
                 try {
                     if (currentAction.type.id === "email") {
                         const body = (0, parser_1.parse)((_a = currentAction.metadata) === null || _a === void 0 ? void 0 : _a.body, zapRunMetadata);
-                        const to = (0, parser_1.parse)((_b = currentAction.metadata) === null || _b === void 0 ? void 0 : _b.email, zapRunMetadata);
+                        const to = (0, parser_1.parse)((_b = currentAction.metadata) === null || _b === void 0 ? void 0 : _b.to, zapRunMetadata);
                         const subject = (0, parser_1.parse)((_c = currentAction.metadata) === null || _c === void 0 ? void 0 : _c.subject, zapRunMetadata);
                         const from = (0, parser_1.parse)((_d = currentAction.metadata) === null || _d === void 0 ? void 0 : _d.from, zapRunMetadata);
                         console.log(`Sending email to ${to} with body: ${body}`);

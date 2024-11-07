@@ -5,6 +5,7 @@ export function parse(text: string, values: any, startDelimeter = "{", endDelime
     let endIndex = 1;
 
     let finalString = "";
+    console.log(text);
     while (endIndex < text.length) {
         if (text[startIndex] === startDelimeter) {
             let endPoint = startIndex + 2;
