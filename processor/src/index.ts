@@ -11,7 +11,7 @@ const client = new PrismaClient();
 
 const REDIS_HOST = process.env.REDIS_HOST;
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4000;
 
 
 const redisClient = createClient({

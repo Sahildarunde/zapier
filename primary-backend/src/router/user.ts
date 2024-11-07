@@ -90,11 +90,9 @@ router.post("/signin", async (req, res): Promise<any> => {
     }, JWT_PASSWORD)
 
     res.json({
-        token: token,
-        id: user.id
+        token: token 
     })
 })
-
 
 router.get("/", authMiddleware, async (req: Request, res:Response): Promise<any> => {
     // fix the the type

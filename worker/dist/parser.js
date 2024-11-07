@@ -6,7 +6,6 @@ function parse(text, values, startDelimeter = "{", endDelimeter = "}") {
     let startIndex = 0;
     let endIndex = 1;
     let finalString = "";
-    console.log(text);
     while (endIndex < text.length) {
         if (text[startIndex] === startDelimeter) {
             let endPoint = startIndex + 2;

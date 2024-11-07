@@ -20,7 +20,7 @@ dotenv_1.default.config();
 const TOPIC_NAME = "zap-events";
 const client = new client_1.PrismaClient();
 const REDIS_HOST = process.env.REDIS_HOST;
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4000;
 const redisClient = (0, redis_1.createClient)({
     url: REDIS_HOST, // This should include the full connection string
 });
@@ -55,17 +55,8 @@ main().catch(err => {
     console.error("Error:", err);
 });
 const server = http_1.default.createServer((req, res) => {
-    if (req.method === 'GET' && req.url === '/') {
-        main().catch(err => {
-            console.error("Error:", err);
-        });
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ status: 'healthy' }));
-    }
-    else {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Not Found');
-    }
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Worker is running');
 });
 server.listen(PORT, () => {
     console.log(`HTTP server running on port ${PORT}`);

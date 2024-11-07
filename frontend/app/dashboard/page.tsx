@@ -8,7 +8,6 @@ import { LinkButton } from "@/components/buttons/LinkButton";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Loader from "@/components/Loader";
-import { headers } from "next/headers";
 
 interface Zap {
     id: string;
@@ -61,32 +60,10 @@ export default function Page() {
     const router = useRouter();
     const [createLoading, setCreateLoading] = useState(false);
 
-    async function handler(){
+    function handler(){
         setCreateLoading(true);
 
-        try {
-            const res = await axios.post(
-                `${BACKEND_URL}/api/v1/zap/createEmptyZap`,
-                {
-                    userId: zaps[0].userId, 
-                },
-                {
-                    headers: {
-                        "Authorization": localStorage.getItem("token"),
-                    },
-                }
-            );
-            if (res.status === 201) {
-                const zapId = res.data.id;
-                if (zapId) {
-                    router.push(`/zap/${zapId}`);
-                } else {
-                    console.error('Zap ID not returned from API');
-                }
-            }
-        } catch (error) {
-            console.error('Error creating zap:', error);
-        }
+        setTimeout(() => router.push("/zap/create"), 300);
     }
 
     return (
@@ -127,16 +104,10 @@ function ZapTable({ zaps }: { zaps: Zap[] }) {
             {zaps.map(z => (
                 <div key={z.id} className="flex items-start border-b py-4 mt-2"> {/* Changed to items-start for better alignment */}
                     <div className="flex items-center flex-1 flex-wrap overflow-hidden"> {/* Added overflow-hidden to prevent overflow */}
-                        {/* Check if z.trigger is valid and then access its image */}
-                        {z.trigger && z.trigger.type && z.trigger.type.image && (
-                            <Image src={z.trigger.type.image} width={30} height={30} className="mr-2" alt="" />
-                        )}
+                        <Image src={z.trigger.type.image} width={30} height={30} className="mr-2" alt="" />
                         <span className="mr-2 mb-2"></span>
-                        {/* Check each action for the image */}
                         {z.actions.map(x => (
-                            x.type && x.type.image && (
-                                <Image key={x.id} src={x.type.image} width={30} height={30} className="mr-2 mt-2" alt="" />
-                            )
+                            <Image key={x.id} src={x.type.image} width={30} height={30} className="mr-2 mt-2" alt="" />
                         ))}
                     </div>
                     <div className="flex-1 text-center overflow-hidden text-ellipsis">{z.id}</div> {/* Added overflow-hidden and text-ellipsis */}
