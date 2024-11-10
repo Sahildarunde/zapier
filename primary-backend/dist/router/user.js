@@ -81,8 +81,10 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
     const token = jsonwebtoken_1.default.sign({
         id: user.id
     }, config_1.JWT_PASSWORD);
+    console.log(user.id);
     res.json({
-        token: token
+        token: token,
+        userId: user.id
     });
 }));
 router.get("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

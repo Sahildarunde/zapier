@@ -149,10 +149,13 @@ router.put("/:zapId", middleware_1.authMiddleware, (req, res) => __awaiter(void 
 }));
 router.post('/createEmptyZap', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId, triggerId } = req.body; // `triggerId` is now optional
+        let { userId, triggerId } = req.body; // `triggerId` is now optional
         // Validate required fields
         if (!userId) {
             return res.status(400).json({ error: "userId is required" });
+        }
+        if (!triggerId) {
+            triggerId = "";
         }
         // Create an empty Zap entry with only the userId (and triggerId if provided)
         const newZap = yield db_1.prismaClient.zap.create({

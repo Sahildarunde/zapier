@@ -89,8 +89,10 @@ router.post("/signin", async (req, res): Promise<any> => {
         id: user.id
     }, JWT_PASSWORD)
 
+    console.log(user.id);
+
     res.json({
-        token: token ,
+        token: token,
         userId: user.id
     })
 })
