@@ -1,4 +1,3 @@
-
 "use client";
 
 import { BACKEND_URL } from "@/app/config";
@@ -108,7 +107,7 @@ export default function Page() {
                             metadata: {}
                         }])
                     }}><div className="text-2xl">
-                        +
+                        
                     </div></PrimaryButton>
                 </div>
             </div>

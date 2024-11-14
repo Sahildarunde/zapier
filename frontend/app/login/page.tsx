@@ -36,6 +36,8 @@ export default function Page() {
                 }
             }, 500);
 
+
+            
             const res = await signinPromise;
 
             timeoutActive = false
@@ -45,6 +47,8 @@ export default function Page() {
 
 
             localStorage.setItem("token", res.data.token);
+            localStorage.setItem("userId", res.data.userId);
+
 
             setTimeout(() => toast.dismiss(toastId), 1000)
             setTimeout(() => {router.push("/dashboard");}, 300)
@@ -204,9 +208,3 @@ export default function Page() {
 //         </div>
 //     );
 // }
-
-
-
-
-
-

@@ -5,6 +5,7 @@ import HeroVideo from "../components/HeroVideo";
 export default function Home() {
   return (
     <main className="pb-48">
+      
         <Appbar />
         <Hero />
         <div className="pt-8 p-4">
