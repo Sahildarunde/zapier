@@ -5,12 +5,30 @@ import Appbar from '@/components/Appbar';
 import { BACKEND_URL } from '../../config';
 import { useParams } from 'next/navigation'; 
 import Loader from '@/components/Loader';
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import ZapDetails from '@/components/ZapDetails';
 import Flow from '@/components/Flow';
 import { store } from '@/store';
 import { Provider } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { useDispatch } from 'react-redux';
 import { loadZap } from '@/store/slices/asyncThunk';
 
@@ -21,6 +39,9 @@ const Page = () => {
   const { id } = useParams(); 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  let urlString = `https://zapier-hooks-w0js.onrender.com/hooks/catch/1/${id}`
+  const [jsonBody, setJsonBody] = useState('');
+  const [buttonloading, setButtonLoading] = useState(false);
 
   
 
@@ -48,7 +69,23 @@ const Page = () => {
     fetchData();
   }, [id]);
 
+  const handleRequest = async() => {
+    setButtonLoading(true)
+    try {
+      const parsedBody = JSON.parse(jsonBody);
+      const res = await axios.post(urlString, parsedBody)
 
+      if(res.data.message === 'Webhook received'){
+        toast.success("Webhook request successfull!")
+      }
+    } catch (error) {
+      toast.error("POST request failed! check json body")
+      console.log(error);
+    }finally{
+      setButtonLoading(false)
+    }
+
+  }
 
   return (
 
@@ -65,7 +102,7 @@ const Page = () => {
       
       <div className="fixed bottom-16 left-24 w-[50%]  z-20 pointer-events-auto">
         <div >
-          {/* <Card>
+          <Card>
             <CardHeader>
               <CardTitle>Postman</CardTitle>
               <CardDescription>Make a webhook request with a JSON body</CardDescription>
@@ -96,7 +133,7 @@ const Page = () => {
               </div>
             </CardContent>
             
-          </Card> */}
+          </Card>
         </div>
       </div>
     </div>
@@ -119,7 +156,7 @@ function ZapDisplay({ data }: { data?: ZapData | null }) {
 
   useEffect(() => {
     if (id) {
-      // @ts-expect-error: This is necessary because dispatch has a mismatch in its current iplementatiom.
+      // @ts-expect-error: this can go wrong
       dispatch(loadZap(id)); // Pass the id to loadZap
     }
   }, [dispatch, id]);
