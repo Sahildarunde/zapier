@@ -1,8 +1,5 @@
 import nodemailer from "nodemailer";
-// SOL_PRIVATE_KEY=""
-// SMTP_USERNAME=""
-// SMTP_PASSWORD=""
-// SMTP_ENDPOINT
+
 
 const transport = nodemailer.createTransport({
     host: process.env.SMTP_ENDPOINT,
@@ -14,10 +11,10 @@ const transport = nodemailer.createTransport({
     },
   });
 
-export async function sendEmail(to: string, body: string, subject: string, from: string) {
+export async function sendEmail(to: string, body: string, subject: string) {
     await transport.sendMail({
-        from: from,
-        sender: from,
+        from: 'teesccript@gmail.com',
+        sender:'teesccript@gmail.com',
         to,
         subject: subject || '',
         text: body

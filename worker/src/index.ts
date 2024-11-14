@@ -10,7 +10,7 @@ import http from 'http';
 dotenv.config();
 
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4001;
 
 
 
@@ -73,22 +73,35 @@ async function main() {
         },
       });
 
+      console.log(zapRunDetails);
+
       const currentAction = zapRunDetails?.zap.actions.find((x) => x.sortingOrder === stage);
       if (!currentAction) {
         console.error("Current action not found for stage:", stage);
         return;
       }
 
+      console.log("current action metadata "+JSON.stringify(currentAction.metadata));
+
+      
+
       const zapRunMetadata = zapRunDetails?.metadata;
+      // @ts-ignore
+      console.log("zaprun metadata " + zapRunMetadata.comment.to)
 
       try {
         if (currentAction.type.id === "email") {
+          console.log("insude try")
           const body = parse((currentAction.metadata as JsonObject)?.body as string, zapRunMetadata);
+          console.log("this is the one " +(currentAction.metadata as JsonObject)?.to);
           const to = parse((currentAction.metadata as JsonObject)?.to as string, zapRunMetadata);
+          console.log("to - " + to);
           const subject = parse((currentAction.metadata as JsonObject)?.subject as string, zapRunMetadata);
-          const from = parse((currentAction.metadata as JsonObject)?.from as string, zapRunMetadata);
+          // const from = parse((currentAction.metadata as JsonObject)?.from as string, zapRunMetadata);
+          // @ts-ignore
           console.log(`Sending email to ${to} with body: ${body}`);
-          await sendEmail(to, body, subject, from);
+          // @ts-ignore
+          await sendEmail(to, body, subject);
         } else if (currentAction.type.id === "send-sol") {
           const amount = parse((currentAction.metadata as JsonObject)?.amount as string, zapRunMetadata);
           const address = parse((currentAction.metadata as JsonObject)?.address as string, zapRunMetadata);

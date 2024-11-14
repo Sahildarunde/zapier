@@ -20,7 +20,7 @@ const solana_1 = require("./solana");
 const dotenv_1 = __importDefault(require("dotenv"));
 const http_1 = __importDefault(require("http"));
 dotenv_1.default.config();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4001;
 const prismaClient = new client_1.PrismaClient();
 const TOPIC_NAME = "zap-events";
 let isRedisConnected = false;
@@ -77,20 +77,29 @@ function main() {
                         },
                     },
                 });
+                console.log(zapRunDetails);
                 const currentAction = zapRunDetails === null || zapRunDetails === void 0 ? void 0 : zapRunDetails.zap.actions.find((x) => x.sortingOrder === stage);
                 if (!currentAction) {
                     console.error("Current action not found for stage:", stage);
                     return;
                 }
+                console.log("current action metadata " + JSON.stringify(currentAction.metadata));
                 const zapRunMetadata = zapRunDetails === null || zapRunDetails === void 0 ? void 0 : zapRunDetails.metadata;
+                // @ts-ignore
+                console.log("zaprun metadata " + zapRunMetadata.comment.to);
                 try {
                     if (currentAction.type.id === "email") {
+                        console.log("insude try");
                         const body = (0, parser_1.parse)((_a = currentAction.metadata) === null || _a === void 0 ? void 0 : _a.body, zapRunMetadata);
-                        const to = (0, parser_1.parse)((_b = currentAction.metadata) === null || _b === void 0 ? void 0 : _b.email, zapRunMetadata);
-                        const subject = (0, parser_1.parse)((_c = currentAction.metadata) === null || _c === void 0 ? void 0 : _c.subject, zapRunMetadata);
-                        const from = (0, parser_1.parse)((_d = currentAction.metadata) === null || _d === void 0 ? void 0 : _d.from, zapRunMetadata);
+                        console.log("this is the one " + ((_b = currentAction.metadata) === null || _b === void 0 ? void 0 : _b.to));
+                        const to = (0, parser_1.parse)((_c = currentAction.metadata) === null || _c === void 0 ? void 0 : _c.to, zapRunMetadata);
+                        console.log("to - " + to);
+                        const subject = (0, parser_1.parse)((_d = currentAction.metadata) === null || _d === void 0 ? void 0 : _d.subject, zapRunMetadata);
+                        // const from = parse((currentAction.metadata as JsonObject)?.from as string, zapRunMetadata);
+                        // @ts-ignore
                         console.log(`Sending email to ${to} with body: ${body}`);
-                        yield (0, email_1.sendEmail)(to, body, subject, from);
+                        // @ts-ignore
+                        yield (0, email_1.sendEmail)(to, body, subject);
                     }
                     else if (currentAction.type.id === "send-sol") {
                         const amount = (0, parser_1.parse)((_e = currentAction.metadata) === null || _e === void 0 ? void 0 : _e.amount, zapRunMetadata);

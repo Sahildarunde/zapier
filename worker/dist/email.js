@@ -14,10 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmail = sendEmail;
 const nodemailer_1 = __importDefault(require("nodemailer"));
-// SOL_PRIVATE_KEY=""
-// SMTP_USERNAME=""
-// SMTP_PASSWORD=""
-// SMTP_ENDPOINT
 const transport = nodemailer_1.default.createTransport({
     host: process.env.SMTP_ENDPOINT,
     port: 587,
@@ -27,11 +23,11 @@ const transport = nodemailer_1.default.createTransport({
         pass: process.env.SMTP_PASSWORD,
     },
 });
-function sendEmail(to, body, subject, from) {
+function sendEmail(to, body, subject) {
     return __awaiter(this, void 0, void 0, function* () {
         yield transport.sendMail({
-            from: from,
-            sender: from,
+            from: 'teesccript@gmail.com',
+            sender: 'teesccript@gmail.com',
             to,
             subject: subject || '',
             text: body
