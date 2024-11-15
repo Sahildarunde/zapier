@@ -8,6 +8,7 @@ import {  useSelector } from "react-redux";
 import { RootState} from "@/store";
 import { useDispatch } from "react-redux";
 import { toggleTheme } from "@/store/slices/themeSlice";
+import Image from "next/image";
 
 const Appbar = () => {
     const router = useRouter();
@@ -44,8 +45,19 @@ const Appbar = () => {
                 zapier
             </div>
             <div className="flex flex-col md:flex-row mt-4 md:mt-0 items-center gap-5">
+
                 <div className="pr-4" onClick={() => dispatch(toggleTheme())}>
                     {theme === 'light' ? <DarkIcon />: <LightIcon/>}
+                </div>
+
+                <a href="https://github.com/Sahildarunde/zapier" target="_blank" rel="noopener noreferrer">
+                    <div className="pr-4" >
+                        <Image src={"./github-mark.svg"} width={25} height={25} alt={"Github logo"} className={`invert-on-dark ${theme === 'dark' ? 'invert' : ''}`}/>                
+                    </div>
+                </a>
+
+                <div className="pr-4 cursor-pointer" >
+                <LinkButton onClick={() => router.push('/systemdesign')}>System Design</LinkButton>
                 </div>
                 
                 {isLoggedIn ? (
