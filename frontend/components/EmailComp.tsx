@@ -4,12 +4,12 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
 import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
 import { BACKEND_URL } from "@/app/config";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { editNode } from "@/store/slices/zapSlice";
+import { PrimaryButton } from "./buttons/PrimaryButton";
 
 
 
@@ -164,8 +164,8 @@ export default function EmailComp() {
             </div>
 
             <div className="flex justify-between">
-                <Button onClick={handlerState}>Save Zap</Button>
-                <Button onClick={handler}>Publish Zap</Button>
+                <PrimaryButton onClick={handlerState}>Save Zap State</PrimaryButton>
+                <PrimaryButton onClick={handler}>Publish Zap</PrimaryButton>
             </div>
                 
         </div>

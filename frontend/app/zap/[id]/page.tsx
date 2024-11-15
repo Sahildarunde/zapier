@@ -5,7 +5,6 @@ import Appbar from '@/components/Appbar';
 import { BACKEND_URL } from '../../config';
 import { useParams } from 'next/navigation'; 
 import Loader from '@/components/Loader';
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -31,6 +30,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useDispatch } from 'react-redux';
 import { loadZap } from '@/store/slices/asyncThunk';
+import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 
 
 
@@ -121,7 +121,7 @@ const Page = () => {
                   </Select>
                 </div>
                   <Input value={urlString} onChange={(e) => urlString=e.target.value}  placeholder="hooks-weblink" />
-                  <Button onClick={handleRequest} disabled={buttonloading}>{buttonloading ? "making request" : "send"}</Button>
+                  <PrimaryButton onClick={handleRequest}>{buttonloading ? "...wait" : "send"}</PrimaryButton>
               </div>
             </CardContent>
             <CardContent className=' min-h-24'>

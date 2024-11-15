@@ -34,12 +34,12 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+  /* .dark {
+    --background: #333;
+    --foreground: #fff;
+    --card:  #333;
+    --card-foreground: #fff;
+    --popover: #333;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
@@ -59,7 +59,16 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-  }
+  } */
+   .dark{
+    background: #333;
+    color: #fff;
+    --card: rgb(112, 112, 91);
+    --card-foreground: rgb(0, 0, 0);
+    --accent-foreground: #000000;
+    --secondary: #000000;
+   }
+
 }
 
 @layer base {

@@ -9,6 +9,10 @@ const initialState = {
         name: "Webhook",
         image: ""
       }, // Ensure type is defined
+      style: {
+        backgroundColor: "#fff",
+        color: "#333",
+      },
       metadata: {},
       data: { label: 'Trigger Node' },
       actionType: "",
@@ -47,7 +51,7 @@ export const zapSlice = createSlice({
       console.log(newNode);
     },    
     editNode: (state, action) => {
-      const { id, updatedDetails, item } = action.payload;
+      const { id, updatedDetails, item, style } = action.payload;
 
       console.log("ye hai type of id: " + typeof(id));
     
@@ -74,7 +78,12 @@ export const zapSlice = createSlice({
               id: item === "Webhook" ? "webhook" : "email",
               name: item
             },  // Here, you use 'type' from the payload
+            style: {
+              ...node.style,
+              ...style
+            },
             metadata: {
+              ...node.metadata,
               ...updatedDetails,
             },
           };
@@ -100,7 +109,11 @@ export const zapSlice = createSlice({
       state.nodes = (action.payload.nodes).map((node, index) => ({
         ...node,
         // Only set position if nodesStore is not empty
-        id: index
+        id: index,
+        style: {
+          backgroundColor: "#fff",
+          color: "#333",
+        }
         // position: action.payload.nodes && action.payload.nodes.length > 0 
         //   ? { x: 0, y: index * 100 } 
         //   : node.position,

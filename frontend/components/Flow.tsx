@@ -38,6 +38,10 @@ const initialNodes = [
       name: "Webhook",
       image: ""
     }, // Ensure type is defined
+    style: {
+      backgroundColor: "#fff",
+      color: "#333",
+    },
     metadata: {},
     data: { label: 'Trigger Node' },
     actionType: "",
@@ -75,6 +79,7 @@ const AddNodeOnEdgeDrop = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedNodeThing, setSelectedNodeThing] = useState(null); // Store the currently selected node
   const dispatch = useDispatch();
+  const theme = useSelector((state: RootState) => state.theme.theme);
 
 
   const onConnect = useCallback(
@@ -151,7 +156,11 @@ const AddNodeOnEdgeDrop = () => {
           id: newNodeId,
           type: 'action', 
           actionType: "" , 
-          details: {} 
+          details: {},
+          style: {
+            backgroundColor: "#fff",
+            color: "#333",
+          } 
         }));
 
         const newNodePosition = {
@@ -193,8 +202,10 @@ const AddNodeOnEdgeDrop = () => {
   const handleNodeClick = (event, node) => {
     setSelectedNodeThing(node);
     console.log("Node Clicked:", node);
+
   
     dispatch(setSelectedNode({
+      ...node,
       id: node.id,
       type:  node.type || "bicto",
       actionType: node.actionType ||"defaultAction",
@@ -215,9 +226,15 @@ const AddNodeOnEdgeDrop = () => {
         id: item === 'Webhook' ? 'webhook' : 'email',
         name: item
       },
+      style: {
+        backgroundColor: "#fff",
+        color: "#333",
+      },
       actionType: item,
       data: { label: item },
-      updatedDetails: {}
+      updatedDetails: {
+
+      }
     };
     
     console.log("Dispatch payload:", payload); // Ensure 'type' is included in the logged payload
@@ -270,6 +287,7 @@ const AddNodeOnEdgeDrop = () => {
         onSelect={handleModalSelect}
         // @ts-expect-error: This can throw error
         items={selectedNodeThing && nodes.find(n => n.id === selectedNodeThing.id).id === '0' ? availableTriggers : availableActions}
+        theme={theme}
       />
     </div>
   );
@@ -286,7 +304,7 @@ export default function Flow() {
 }
 
 // @ts-expect-error: This can throw error
-const ItemSelectionModal = ({ isOpen, onClose, onSelect, items }) => {
+const ItemSelectionModal = ({ isOpen, onClose, onSelect, items, theme }) => {
   if (!isOpen) return null;
 
   return (
@@ -304,7 +322,7 @@ const ItemSelectionModal = ({ isOpen, onClose, onSelect, items }) => {
     >
       <div
         style={{
-          backgroundColor: 'white',
+          backgroundColor: theme === 'light' ? '#fff' : '#333',
           padding: '20px',
           borderRadius: '8px',
           width: '300px',

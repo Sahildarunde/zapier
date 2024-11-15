@@ -10,8 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/app/config";
@@ -22,6 +21,7 @@ import {
   } from "@/components/ui/popover"
 import { useDispatch } from "react-redux";
 import { setRecordNode } from "@/store/slices/recordSlice";
+import { PrimaryButton } from "./buttons/PrimaryButton";
   
 
 
@@ -107,7 +107,7 @@ function Configure(
             </div>
 
             <div className="flex justify-center item-center mt-12">
-                <Button onClick={() =>triggerEvent==="" ? toast.error("enter trigger event") : setActiveTab("test")}>Continue</Button>
+                <PrimaryButton onClick={() =>triggerEvent==="" ? toast.error("enter trigger event") : setActiveTab("test")}>Continue</PrimaryButton>
             </div>
         </div>
     )
@@ -212,9 +212,9 @@ function Test({ urlString, setVerified }: { urlString: string, setVerified}) {
 
 
             <div className="flex justify-center item-center mt-12">
-                <Button onClick={handleTestTrigger} disabled={loading}>
+                <PrimaryButton onClick={handleTestTrigger} >
                     {loading ? "fetching request..." : "Listen on Trigger"}
-                </Button>
+                </PrimaryButton>
             </div>
 
             
