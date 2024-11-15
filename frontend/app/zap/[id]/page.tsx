@@ -33,7 +33,18 @@ import { loadZap } from '@/store/slices/asyncThunk';
 import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 
 
+function useIsMdScreen() {
+  const [isMdScreen, setIsMdScreen] = useState(false);
 
+  useEffect(() => {
+    const checkScreenSize = () => setIsMdScreen(window.innerWidth >= 640);
+    checkScreenSize(); // Initial check
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  return isMdScreen;
+}
 
 const Page = () => {
   const { id } = useParams(); 
@@ -42,8 +53,7 @@ const Page = () => {
   let urlString = `https://zapier-hooks-w0js.onrender.com/hooks/catch/1/${id}`
   const [jsonBody, setJsonBody] = useState('');
   const [buttonloading, setButtonLoading] = useState(false);
-
-  
+  const isMdScreen = useIsMdScreen();
 
 
   useEffect(() => {
@@ -87,57 +97,67 @@ const Page = () => {
 
   }
 
+  if (!isMdScreen) {
+    return (
+      <div className='flex justify-center items-center h-screen text-lg'>
+        Switch to a larger screen to view this content.
+      </div>
+    );
+  }
+
   return (
 
-    <Provider store={store}> 
-    <ToastContainer position="top-center" closeButton autoClose={1500} /> 
-    <div className='relative h-screen w-screen'>
-      <Appbar />
+    <div className={``}>
+      <Provider store={store}> 
+      <ToastContainer position="top-center" closeButton autoClose={1500} /> 
+      <div className='relative h-screen w-screen'>
+        <Appbar />
 
-      <Flow />
+        <Flow />
 
-      <div className="absolute top-36 right-16 z-10 pointer-events-auto">
-        {loading ? <Loader /> : <ZapDisplay data={data}/>}
-      </div>
-      
-      <div className="fixed bottom-16 left-24 w-[50%]  z-20 pointer-events-auto">
-        <div >
-          <Card>
-            <CardHeader>
-              <CardTitle>Postman</CardTitle>
-              <CardDescription>Make a webhook request with a JSON body</CardDescription>
-            </CardHeader>
+        <div className="absolute top-36 right-16 z-10 pointer-events-auto">
+          {loading ? <Loader /> : <ZapDisplay data={data}/>}
+        </div>
+        
+        <div className="fixed bottom-16 left-24 w-[50%]  z-20 pointer-events-auto">
+          <div  >
+            <Card>
+              <CardHeader>
+                <CardTitle>Postman</CardTitle>
+                <CardDescription>Make a webhook request with a JSON body</CardDescription>
+              </CardHeader>
 
-            <CardContent>
-              <div className='flex justify-center items-center'>
-                <div>
-                  <Select value='POST'>
-                    <SelectTrigger className="w-24 text-yellow-600 font-bold">
-                      <SelectValue>POST</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value='POST'>POST</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <CardContent>
+                <div className='flex justify-center items-center'>
+                  <div>
+                    <Select value='POST'>
+                      <SelectTrigger className="w-24 text-yellow-600 font-bold">
+                        <SelectValue>POST</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='POST'>POST</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                    <Input value={urlString} onChange={(e) => urlString=e.target.value}  placeholder="hooks-weblink" />
+                    <PrimaryButton onClick={handleRequest}>{buttonloading ? "...wait" : "send"}</PrimaryButton>
                 </div>
-                  <Input value={urlString} onChange={(e) => urlString=e.target.value}  placeholder="hooks-weblink" />
-                  <PrimaryButton onClick={handleRequest}>{buttonloading ? "...wait" : "send"}</PrimaryButton>
-              </div>
-            </CardContent>
-            <CardContent className=' min-h-24'>
-              <div className=' h-full'>
-              <div className="grid gap-1.5">
-                <Label >JSON Body</Label>
-                <Textarea placeholder={ " {'comment' : { 'to': 'abc@xyz.com','subject': 'This is Automated Zap ','amount': 0.5 }}" } onChange={(e) => setJsonBody(e.target.value)}/>
-              </div>
-              </div>
-            </CardContent>
-            
-          </Card>
+              </CardContent>
+              <CardContent className=' min-h-24'>
+                <div className=' h-full'>
+                <div className="grid gap-1.5">
+                  <Label >JSON Body</Label>
+                  <Textarea placeholder={ " {'comment' : { 'to': 'abc@xyz.com','subject': 'This is Automated Zap ','amount': 0.5 }}" } onChange={(e) => setJsonBody(e.target.value)}/>
+                </div>
+                </div>
+              </CardContent>
+              
+            </Card>
+          </div>
         </div>
       </div>
+      </Provider>
     </div>
-    </Provider>
   );
 };
 
